@@ -11,7 +11,7 @@ public class Persona extends Thread {
     protected static final int PORT = 5000;
     private static int resistencia;
     private static final boolean[] vacunas = new boolean[4];
-    public static int talla=0;
+    public static int talla = 0;
 
     public static void main(String[] arg) {
 
@@ -42,8 +42,8 @@ public class Persona extends Thread {
     }
 
     private static void setResistencia() {
-        resistencia = (int) Math.round(Math.random()*1999+1);
-        System.out.println("Resistencia:" + resistencia);
+        resistencia = (int) Math.round(Math.random() * 1999 + 1);
+        System.out.println("Resistencia: " + resistencia + "\n");
     }
 
     protected static int getResistencia() {
@@ -54,10 +54,10 @@ public class Persona extends Thread {
     protected static synchronized int alterarResistencia(int num) {
 
         resistencia -= num;
-        if(resistencia<0){
-            resistencia=0;
+        if (resistencia < 0) {
+            resistencia = 0;
         }
-        System.out.println("Resistencia: "+resistencia);
+        System.out.println("Resistencia: " + resistencia);
         return resistencia;
     }
 
@@ -78,7 +78,7 @@ public class Persona extends Thread {
                 }
             }
 
-        } while (dosFalsos!=2);
+        } while (dosFalsos != 2);
     }
 
     public static boolean getVacunado(String nombre) {
@@ -113,12 +113,12 @@ public class Persona extends Thread {
 }
 
 class ServidorClient extends Thread {
+
     Socket serverClient;
     private ObjectInputStream inStream = null;
     private ObjectOutputStream outStream = null;
 
     ServidorClient(Socket serverClient) {
-
         this.serverClient = serverClient;
     }
 
@@ -130,54 +130,55 @@ class ServidorClient extends Thread {
         scCerrar();
     }
 
-    private boolean vacunacion(){
+    private boolean vacunacion() {
 
         boolean vacunado = false;
         try {
             inStream = new ObjectInputStream(serverClient.getInputStream());
             String nombre = (String) inStream.readObject();
 
-            vacunado=Persona.getVacunado(nombre);
+            vacunado = Persona.getVacunado(nombre);
 
             outStream = new ObjectOutputStream(serverClient.getOutputStream());
             outStream.writeObject(vacunado);
 
-        } catch (IOException | ClassNotFoundException ceio){
+        } catch (IOException | ClassNotFoundException ceio) {
             System.out.println(ceio);
         }
 
         return vacunado;
     }
 
-    private void infeccion(){
+    private void infeccion() {
 
         boolean vivo;
         int vida = Persona.getResistencia();
-        vivo=vida>0;
+        vivo = vida > 0;
 
         try {
             inStream = new ObjectInputStream(serverClient.getInputStream());
             Infeccion infeccion = (Infeccion) inStream.readObject();
 
-            if(vivo){
+            if (vivo) {
                 vida = Persona.alterarResistencia(infeccion.danyo);
             }
 
             outStream = new ObjectOutputStream(serverClient.getOutputStream());
             outStream.writeObject(vida);
 
-        } catch (IOException | ClassNotFoundException ceio){
+        } catch (IOException | ClassNotFoundException ceio) {
             System.out.println(ceio);
         }
 
     }
 
-    private void scCerrar(){
+    private void scCerrar() {
 
         try {
             inStream.close();
             outStream.close();
             serverClient.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

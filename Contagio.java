@@ -28,8 +28,8 @@ public class Contagio extends Thread implements Serializable {
         }
     }
 
-    public void cerrarConexion(){
-        try{
+    public void cerrarConexion() {
+        try {
             inStream.close();
             outStream.close();
             socketClient.close();
@@ -48,16 +48,16 @@ public class Contagio extends Thread implements Serializable {
             inStream = new ObjectInputStream(socketClient.getInputStream());
             vacunacion = (boolean) inStream.readObject();
 
-        } catch (IOException | ClassNotFoundException ceio){
+        } catch (IOException | ClassNotFoundException ceio) {
             System.out.println(ceio);
         }
         return vacunacion;
     }
 
-    public int infeccion(){
+    public int infeccion() {
 
         Infeccion infeccion = new Infeccion(nombre, danyo);
-        int vida=1;
+        int vida = 1;
         try {
             outStream = new ObjectOutputStream(socketClient.getOutputStream());
             outStream.writeObject(infeccion);
@@ -65,10 +65,9 @@ public class Contagio extends Thread implements Serializable {
             inStream = new ObjectInputStream(socketClient.getInputStream());
             vida = (int) inStream.readObject();
 
-        } catch (IOException | ClassNotFoundException ceio){
+        } catch (IOException | ClassNotFoundException ceio) {
             System.out.println(ceio);
         }
         return vida;
     }
 }
-
